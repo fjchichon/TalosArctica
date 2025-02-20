@@ -1,0 +1,71 @@
+ScriptName Parent_Directory_Creation
+#####
+# Created for Talos#
+# 11_1_23 Jchichon
+##################
+
+## Variables to change #################
+#Project NAME
+# to create the Folder for the project
+EnterString Project_Name introduce characters to define better the project
+#Project_Name = XXXX # introduce characters to define better the project
+#########################################################
+
+######### GRID Variables #############################
+# NUMBER OF GRIDS # introduce the number of grids BETTER 12 to avoid probles
+EnterString NGRIDS  Default 12 grids
+
+# Grid to Start # it could be updated Afterwards
+EnterString WGRIDS Default 1. The grid you want to start with
+######################################
+
+#### Stiky Variables  ####################
+## Only change if you know what you ar doing
+DISK = Z: # OffloadData (Better not change it)
+ATLAS_dir = ATLAS # For Atlas and Square maps as well as navigator
+SEARCH_dir = SEARCH # For Search images (5300)  and 
+SCREEN_dir = SCREEN # For Image/DIFF images and txt files (2200)
+DATA_dir = DATA # EPU-D data would be inside DIFF datasets
+# USE actual Data to label the project
+ReportDateTime 
+DATE = $Repval1
+###########################################
+
+### RUN ###########################
+
+
+# Create Parent Directory ######################### 
+ROUTE = $DISK/$DATE_MicroED_$Project_Name 
+###################################################
+
+MakeDirectory $ROUTE
+RunInShell echo $ROUTE > $DISK/XTAL_PATH.txt
+ReadTextFile  Parent_Directory $DISK/XTAL_PATH.txt
+echo $Parent_Directory HAS BEEN CREATED
+
+
+
+#CREATION OF SUBFOLDERS
+
+DoLoop GRID 1 $NGRIDS 
+  LOCAL_DIR = $Parent_Directory\$GRID
+    MakeDirectory $LOCAL_DIR
+    RunInShell echo $LOCAL_DIR >> $LOCAL_DIR\LocalDir.txt
+        MakeDirectory $LOCAL_DIR\$ATLAS_dir
+        MakeDirectory $LOCAL_DIR\$SEARCH_dir
+        MakeDirectory $LOCAL_DIR\$SCREEN_dir
+        MakeDirectory $LOCAL_DIR\$DATA_dir
+EndLoop 
+
+# Create Firs Working Directory Path
+
+
+    
+    echo Parent Directory is $Parent_Directory
+    
+    RunInShell echo $Parent_Directory/$WGRIDS > $DISK/XTAL_Working_PATH.txt
+    
+    ReadTextFile  XTAL_Working_PATH $DISK/XTAL_PATH.txt
+    echo XTAL_Working_PATH HAS BEEN CREATED
+
+############################
