@@ -1,0 +1,29 @@
+MacroName mapgrids
+ScriptName Inventory&ATLAS
+
+# Dock a cassette, setup full montage, change cooldown delay time, and start this script
+# When reloading a previously mapped grid, see SerialEM help in Navigator menu, Align with Rotation.
+
+#Delay 15 min # change cooldown wait time to match your local autoloader cooldown time WE PREFER TO WAIT FOR THE TEMP
+#LongOperation In
+
+
+
+Loop 8 index
+   echo $index
+   ReportSlotStatus $index
+   if $RepVal1 == 1
+      ScreenUp
+      LoadCartridge $index	
+      MoveStageTo 0 0 0
+      SetColumnOrGunValve 1
+      #CallFunction EMProperties 
+       #M
+       #NewMap
+       CallScript 4
+    endif
+endloop
+
+CLoseFile
+SetColumnOrGunValve 0
+
