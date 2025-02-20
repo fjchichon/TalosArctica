@@ -1,0 +1,104 @@
+ScriptName AcquireMosaic
+#####
+# Created for Talos#
+# 23_1_25 Jchichon
+#
+
+## Read WorkingDir #################
+# Save images in the SEARCH Directory 
+#CallFunction ReadXtalWorking_PATH
+
+ReadTextFile  Parent_Directory z:/XTAL_Working_PATH.txt
+############################
+#VARIBLES TO SET
+Mosaic_BIN = 2
+MontSIZE = 3  # (4x4)
+
+
+
+echo Has ajustado el image shift? +++++++++++++++++++++++++++++++++++++++++++
+echo Has ajustado la camara?, Usaremos Ceta
+#Usamos Seach Settings de EM Properties
+echo Vamos alla
+
+SetColumnOrGunValve 1 #1=abiertas
+SetLowDoseMode 1
+Eucentricity 1
+#SetLowDoseMode 0
+
+
+
+#GoToImagingState Search_Mosaico
+CallFunction EMPropertiesMosaicSQ
+
+ReportNavItem 
+Pos = $RepVal1
+echo Running in $Pos
+
+
+
+
+OpenNewMontage $MontSIZE $MontSIZE $Parent_Directory/SEARCH/Search_$Pos.mrc
+SetMontageParams 1 200 200 -1 -1 0 $Mosaic_BIN
+################
+#1=stage
+#200=overlap 
+#-1=frames
+#0=correlacion
+#2=binning
+##################
+
+SetColumnOrGunValve 1
+#Go Eucentric changing options
+
+
+
+#Acquire and save
+Montage 
+NewMap 
+CloseFile 
+
+echo Acquired Map  $Parent_Directory/SEARCH/Search_$Pos.mrc
+
+
+
+# FUNCTIONS
+############################################
+Function ReadXtalWorking_PATH
+
+    ReadTextFile  Working_Directory Y:\XTAL_Working_PATH.txt
+    echo Working Directory is $Working_Directory  
+    
+EndFunction
+
+Function EMPropertiesMosaicSQ
+   # ========= Take Atlas map =========
+    #Setup CAMERA
+         echo CETA CAMERA WILL BE USED
+       SelectCamera 1 # LA 2 es la Falcon
+
+   # Setup illumination for SquareMosaic
+
+    #SetLowDoseMode 0
+    SetApertureSize 1 150
+    RemoveAperture 2
+    SetMAG 3400
+    SetSpotSize 8
+    SetPercentC2 68
+    SetExposure S 1
+    SetExposure T 1
+
+
+    Try 
+        SetBinning M $Mosaic_BIN
+        SetExposure M 1
+        SetBinning S $Mosaic_BIN
+        SetExposure S 1
+        KeepCameraSetChanges 
+        
+     Catch 
+        Echo ===> Hi :)
+    EndTry 
+  
+
+EndFunction 
