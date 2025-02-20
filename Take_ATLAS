@@ -1,0 +1,68 @@
+ScriptName Take ATLAS
+
+# ========= Setup file path for Atlas map =========
+    # Setup Session directory
+    Echo ===> Please set your session directory.
+    UserSetDirectory
+    ReportDirectory
+    session_dir = $repVal1
+OpenNavigator 
+    # Setup atlas map file
+    atlas_map @= Atlas.mrc # FOrce mrc extension
+    path_to_atlas = $session_dir\$atlas_map
+
+    CloseFile
+    RemoveFile $path_to_atlas
+
+    CallFunction EMProperties
+    
+    
+    NewMap
+    SaveNavigator $session_dir\navigator.nav
+
+    SaveToOtherFile A JPG NONE $session_dir\atlas_snap.jpg
+    SetColumnOrGunValve 0
+    CloseFile 
+    echo CLOSED Valves and ATLAS file
+
+
+####################################
+####             FUNCTIONS   ##############
+####################################
+
+Function EMProperties
+   # ========= Take Atlas map =========
+       #Setup CAMERA
+         echo FALCON CAMERA WILL BE USED
+       SelectCamera 2
+
+   # Setup illumination for Atlas
+   SetColumnOrGunValve 1
+    SetLowDoseMode 0
+    SetApertureSize 1 150
+    RemoveAperture 2
+    SetMAG 115
+    SetSpotSize 10
+    SetPercentC2 99
+  MoveStageTo 0 0
+
+    Try 
+        SetBinning M 2
+        SetExposure M 2
+        SetBinning R 2
+        SetExposure R 2
+        KeepCameraSetChanges 
+        
+        OpenNewMontage 6 6 $path_to_atlas
+    Catch 
+        Echo ===> Hi :)
+    EndTry 
+
+
+SetMontageParams -1 
+    M
+
+
+
+
+EndFunction 
